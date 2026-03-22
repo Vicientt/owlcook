@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const api = axios.create();
+const apiBaseUrl = import.meta.env.VITE_API_URL || '';
+const api = axios.create({ baseURL: apiBaseUrl });
 let token = null;
 
 export const setToken = (newToken) => {
