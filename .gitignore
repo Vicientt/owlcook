@@ -26,3 +26,6 @@ dist-ssr
 
 # Other
 *.env
+frontend/routes.json
+frontend/src/app/db.json
+frontend/src/app/utils/test_data_generator.js
