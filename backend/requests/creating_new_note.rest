@@ -1,0 +1,33 @@
+POST http://localhost:3001/api/notes
+Content-Type: application/json
+
+{
+    "content": "You are so beautiful",
+    "important": false
+}
+
+###
+DELETE http://localhost:3001/api/notes/69ac8db273bdad7f7fa66fee
+
+###
+PUT http://localhost:3001/api/notes/69ac8db273bdad7f7fa66fee
+Content-Type: application/json
+
+{
+    "content": "Hello universe",
+    "important": true
+}
+
+###
+POST http://localhost:3001/api/blogs
+Content-Type: application/json
+
+{
+    "title": "Quang Nguyen",
+    "author": "Quang and Minh Anh",
+    "url": "Idk",
+    "likes": "123123"
+}
+
+###
+DELETE http://localhost:3003/api/blogs/69afb725069cfb7d2d1357bf

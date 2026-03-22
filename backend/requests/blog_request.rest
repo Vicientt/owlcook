@@ -1,0 +1,45 @@
+POST http://localhost:3001/api/users
+Content-Type: application/json
+
+{
+    "name": "Hoan",
+    "username": "vicenttreni",
+    "password": "123456789"
+}
+
+### 
+POST http://localhost:3001/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZpY2VudHRyZW5pIiwiaWQiOiI2OWIxYTk3Y2ExOTc1MWY5MzlmOTc1MDEiLCJpYXQiOjE3NzM0Nzg1MTcsImV4cCI6MTc3MzQ4MjExN30.eyOWVrDh9ZTsdFtpzgB9puFUaNljfsbiE3rm_EyTCFE
+
+{
+    "title": "BANH MI",
+    "author": "Great",
+    "url": "Iblesvd"
+}
+###
+
+POST http://localhost:3001/api/login
+Content-Type: application/json
+
+{
+    "username": "vicenttreni",
+    "password": "123456789"
+}
+
+###
+DELETE http://localhost:3001/api/blogs/69b1b7b85dd0a9eb5a887dd7
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZpY2VudHRyZW5pIiwiaWQiOiI2OWIxYTk3Y2ExOTc1MWY5MzlmOTc1MDEiLCJpYXQiOjE3NzMyNjA5MzksImV4cCI6MTc3MzI2NDUzOX0.BQQwK85VJDEXmv3gUAvYT4mtrpIr1QICBOc4Y5Z0b2k
+
+###
+PUT http://localhost:3001/api/blogs/69b522893bd22ae8c94a432f
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InZpY2VudHRyZW5pIiwiaWQiOiI2OWIxYTk3Y2ExOTc1MWY5MzlmOTc1MDEiLCJpYXQiOjE3NzM0Nzg1ODUsImV4cCI6MTc3MzQ4MjE4NX0.KUqdKikrqfXVBD2vvO6Ql4t2ga8NVc8RHMOA4piGBX4
+
+{
+    "title": "Tinh yeu voi cuoc doi",
+    "author": "Hedge fund",
+    "url": "123123132",
+    "likes": 2
+}

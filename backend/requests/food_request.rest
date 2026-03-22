@@ -1,0 +1,103 @@
+
+POST http://localhost:3001/api/users
+Content-Type: application/json
+
+{
+    "email": "nguyen15@kenyon.edu",
+    "name": "Hoan Nguyen",
+    "password": "Hoanhahnco"
+}
+
+###
+POST http://localhost:3001/api/login
+Content-Type: application/json
+
+{
+    "email": "nguyen15@kenyon.edu",
+    "password": "Hoanhanco123"
+}
+
+###
+POST http://localhost:3001/api/food
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5ndXllbjE1QGtlbnlvbi5lZHUiLCJpZCI6IjY5YmExODIyMWU1MGEyODNlNjU1MzJjYyIsImlhdCI6MTc3MzgwMzY3MywiZXhwIjoxNzczODEwODczfQ.dnJBXpiI4bmka0JA3eAjM8Dhrj0cJD4h4fEPQE7MyJw
+
+{
+      "name": "Spicy Thai Noodles",
+      "description": "Aromatic rice noodles tossed with Thai spices, fresh vegetables, and a tangy sauce. Perfect for a quick and flavorful meal.",
+      "time": "25 min",
+      "cost": "8",
+      "servings": "2",
+      "difficulty": "Medium",
+      "ingredients": [
+        {
+          "name": "Rice noodles",
+          "amount": "200g"
+        },
+        {
+          "name": "Thai basil",
+          "amount": "1/2 cup"
+        },
+        {
+          "name": "Soy sauce",
+          "amount": "2 tbsp"
+        },
+        {
+          "name": "Lime juice",
+          "amount": "1 tbsp"
+        },
+        {
+          "name": "Bell peppers",
+          "amount": "1"
+        },
+        {
+          "name": "Garlic",
+          "amount": "2 cloves"
+        }
+      ],
+      "steps": [
+        "Cook rice noodles according to package. Drain and set aside.",
+        "Heat oil in a wok, add garlic and stir until fragrant.",
+        "Add bell peppers and stir-fry for 2 minutes.",
+        "Add noodles, soy sauce, and lime juice. Toss well.",
+        "Add Thai basil and serve immediately."
+      ],
+      "nutritions": {
+        "calories": "420",
+        "protein": "12",
+        "carbs": "65",
+        "fat": "12"
+      }
+}
+
+###
+PUT http://localhost:3001/api/users
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5ndXllbjE1QGtlbnlvbi5lZHUiLCJpZCI6IjY5YmExODIyMWU1MGEyODNlNjU1MzJjYyIsImlhdCI6MTc3MzgwNjMzNSwiZXhwIjoxNzczODEzNTM1fQ.n9V7pgqHIR2H7sk64Qj-cDPfL0TNuqxGi1dvcjYBpeU
+
+{
+    "oldPassword": "Hoanhanco123",
+    "newPassword": "Hoanhahnco123"
+}
+
+###
+GET http://localhost:3001/api/users
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5ndXllbjE1QGtlbnlvbi5lZHUiLCJpZCI6IjY5YmExODIyMWU1MGEyODNlNjU1MzJjYyIsImlhdCI6MTc3MzgwNjMzNSwiZXhwIjoxNzczODEzNTM1fQ.n9V7pgqHIR2H7sk64Qj-cDPfL0TNuqxGi1dvcjYBpeU
+
+###
+GET http://localhost:3001/api/food
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5ndXllbjE1QGtlbnlvbi5lZHUiLCJpZCI6IjY5YmExODIyMWU1MGEyODNlNjU1MzJjYyIsImlhdCI6MTc3MzgwNjMzNSwiZXhwIjoxNzczODEzNTM1fQ.n9V7pgqHIR2H7sk64Qj-cDPfL0TNuqxGi1dvcjYBpeU
+
+###
+POST http://localhost:3001/api/generator
+Content-Type: application/json
+
+{
+  "budget": "50$",
+  "portion": "3 people",
+  "cookingTime": "< 1hour",
+  "diet": "Any",
+  "Cuisine": "Asian"
+}
