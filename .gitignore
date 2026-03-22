@@ -25,7 +25,10 @@ dist-ssr
 *.sw?
 
 # Other
-*.env
+.env
+.env.local
+.env.production
+.env.*.local
 frontend/routes.json
 frontend/src/app/db.json
 frontend/src/app/utils/test_data_generator.js
