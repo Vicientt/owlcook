@@ -21,7 +21,7 @@ const prompt = (budget, portion, cookingTime, diet, cuisine) => {
 
     JSON FORMAT:
     {
-    "name": "",
+    "name": "" - Be specific and detailed name,
     "description": "",
     "time": "",
     "cost": "" - No need unit here (In USD),
