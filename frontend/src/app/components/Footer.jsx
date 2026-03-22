@@ -8,7 +8,7 @@ export function Footer() {
           <span>© {currentYear} OwlCook. All rights reserved.</span>
           <span className="text-gray-300">·</span>
           <span className="bg-gradient-to-r from-[#432C91] via-[#0D9488] to-[#D97706] bg-clip-text text-transparent font-semibold">
-            Created by Hoan and Nhi
+            Created by Hoan
           </span>
         </div>
       </div>
