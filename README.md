@@ -22,7 +22,7 @@ OwlCook is a full-stack web application that helps college students discover and
 | Layer | Technology |
 |-------|------------|
 | **Frontend** | React 19, React Router 7, Vite 6, Tailwind CSS 4, Axios, Lucide React (icons) |
-| **Backend** | Node.js, Express 5, MongoDB (Mongoose), JWT, bcrypt |
+| **Backend** | Node.js, Express 5, MongoDB (Mongoose), express-session, bcrypt |
 | **AI** | OpenAI GPT-4 (recipe generation) |
 
 ---
@@ -30,7 +30,7 @@ OwlCook is a full-stack web application that helps college students discover and
 ## Project Structure
 
 ```
-tigercook_test/
+owlcook/
 ├── frontend/
 │   ├── src/
 │   │   ├── app/
@@ -54,7 +54,7 @@ tigercook_test/
 │   ├── app.js
 │   ├── index.js
 │   └── package.json
-└── DOCS.md
+└── README.md
 ```
 
 ---
@@ -73,32 +73,39 @@ Create `backend/.env`:
 
 ```
 MONGODB_URI=mongodb+srv://...
-SECRET=<jwt-secret>
+SECRET=<session-secret>
 OPENAI_API_KEY=sk-...
 PORT=3001
 ```
 
-For tests: `TEST_MONGODB_URI`, `TEST_MONGODB_URI` (when `NODE_ENV=test`).
+For tests: `TEST_MONGODB_URI` (when `NODE_ENV=test`).
 
 ### Run the Application
 
-**1. Backend:**
+**Option 1 – Run both at once (from repo root):**
+
+```bash
+npm install
+npm run dev
+```
+
+**Option 2 – Run separately:**
+
+**Backend:**
 
 ```bash
 cd backend
 npm install
-npm run dev      # Development
+npm run dev      # Development (port 3001)
 npm run dev:test # Test env
 ```
 
-Backend runs on `http://localhost:3001`.
-
-**2. Frontend:**
+**Frontend:**
 
 ```bash
 cd frontend
 npm install
-npm run dev
+npm run dev      # Runs on http://localhost:5173
 ```
 
 Frontend runs on `http://localhost:5173`. Vite proxies `/api` to `http://localhost:3001`.
@@ -110,42 +117,57 @@ Frontend runs on `http://localhost:5173`. Vite proxies `/api` to `http://localho
 ### Request Flow
 
 1. User opens app → React Router loads route.
-2. Protected routes: loader checks `localStorage.UserInformation`; if missing → redirect to `/`.
-3. API calls use `axiosInstance`, which adds `Authorization` header.
-4. Backend: `tokenExtractor` reads JWT, `userExtractor` (per-route) validates token and loads user.
-5. On 401/403 or JWT errors: frontend interceptor clears storage and redirects to `/`.
+2. Protected route loader calls `GET /api/me`; if the server returns 401 (no active session) → redirect to `/`.
+3. API calls use `axiosInstance` with `withCredentials: true` so the session cookie is sent automatically.
+4. Backend: `userExtractor` middleware reads `req.session.userId` and attaches the full user object to `req.user`.
+5. On 401 response: frontend interceptor redirects to `/`.
 
 ### Frontend
 
 - **`main.jsx`** – Entry point; imports `axiosInstance` so interceptors are registered.
-- **`App.jsx`** – Restores token from `localStorage` into services on app load.
-- **`routes.jsx`** – Defines routes and loaders.
-- **`axiosInstance.js`** – Shared axios instance with request/response interceptors.
+- **`App.jsx`** – App shell; routes are protected via loader.
+- **`routes.jsx`** – Defines routes and loaders; protected routes call `/api/me` to verify session.
+- **`axiosInstance.js`** – Shared axios instance with `withCredentials: true` and a response interceptor that handles 401s.
 - **`theme.css`** – CSS variables for colors, typography, spacing.
 
 ### Backend
 
-- **`app.js`** – Express setup, middleware, routers.
+- **`app.js`** – Express setup, `express-session` config, middleware, routers.
 - **`index.js`** – Starts HTTP server.
-- **`utils/middleware.js`** – `tokenExtractor`, `userExtractor`, `errorHandler`.
+- **`utils/middleware.js`** – `userExtractor` (reads `req.session.userId`), `errorHandler`.
 - **`utils/prompt.js`** – GPT prompt for recipe generation.
 
 ---
 
 ## Authentication
 
-### Flow
+> **Auth path used: Cookie-based server sessions (`express-session`)**
 
-1. **Login** (`POST /api/login`) – Validates email/password, returns JWT.
-2. **Token storage** – Frontend stores `{ token, email, name }` in `localStorage` under `UserInformation`.
-3. **Token restoration** – On app load, `App.jsx` reads token and calls `foodService.setToken()` / `userService.setToken()`.
-4. **API requests** – `axiosInstance` request interceptor adds `Authorization: Bearer <token>`.
-5. **Auth errors** – Response interceptor detects 401/403 or JWT-related messages, clears `localStorage`, and redirects to `/`.
+### How It Works
 
-### Token Validation
+1. **Register** (`POST /api/users`) – Hashes password with bcrypt and saves user to MongoDB.
+2. **Login** (`POST /api/login`) – Validates email/password with bcrypt; on success sets `req.session.userId` and returns `{ id, email, name }`.
+3. **Session cookie** – Express writes a `connect.sid` cookie (`httpOnly`, `maxAge` 24 hours) to the browser automatically.
+4. **Subsequent requests** – Browser sends the cookie on every request; `userExtractor` middleware resolves the user from `req.session.userId`.
+5. **Session check** (`GET /api/me`) – Used by route loaders to verify an active session; returns current user or 401.
+6. **Logout** (`POST /api/logout`) – Calls `req.session.destroy()` and clears the `connect.sid` cookie.
 
-- **Backend:** `tokenExtractor` reads Bearer token; `userExtractor` verifies via JWT and loads user from DB.
-- **Frontend:** Response interceptor checks status/message; on auth error → redirect to login.
+### Session Configuration (backend `app.js`)
+
+```js
+app.use(session({
+  secret: config.SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }  // 24 hours
+}))
+```
+
+### Notes
+
+- No tokens are stored in `localStorage`; all auth state lives server-side.
+- The session store is **in-memory** (default). Sessions are valid for 24 hours but will be lost on server restart.
+- Protected API routes use the `userExtractor` middleware.
 
 ---
 
@@ -155,17 +177,17 @@ Frontend runs on `http://localhost:5173`. Vite proxies `/api` to `http://localho
 |------|-----------|------|--------|
 | `/` | Login | No | - |
 | `/signup` | SignUp | No | - |
-| `/dashboard` | Dashboard | Yes | - |
-| `/generator` | RecipeGenerator | Yes | - |
+| `/dashboard` | Dashboard | Yes | `GET /api/me` |
+| `/generator` | RecipeGenerator | Yes | `GET /api/me` |
 | `/recipe/:id` | RecipeAnswer | Yes | `foodService.getById(id)` |
 | `/answer` | RecipeAnswer | Yes | - |
-| `/explore` | Explore | Yes | - |
+| `/explore` | Explore | Yes | `GET /api/me` |
 | `/explore/:id` | RecipeAnswer | Yes | Local `recipes.find(id)` |
 | `/favorites` | Favorites | Yes | `foodService.getAll()` |
-| `/profile` | Profile | Yes | - |
+| `/profile` | Profile | Yes | `GET /api/me` |
 | `*` | NotFound | Yes | - |
 
-**Protected routes** are wrapped in a parent route whose loader enforces `localStorage.UserInformation`.
+**Protected routes** are wrapped in a parent route whose loader calls `GET /api/me`. A 401 response redirects the user to `/`.
 
 ---
 
@@ -175,9 +197,11 @@ Frontend runs on `http://localhost:5173`. Vite proxies `/api` to `http://localho
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/api/login` | Login; body: `{ email, password }` |
 | POST | `/api/users` | Register; body: `{ name, email, password }` |
-| PUT | `/api/users` | Update profile/password; requires Bearer token |
+| POST | `/api/login` | Login; body: `{ email, password }`; sets session cookie |
+| POST | `/api/logout` | Logout; destroys session and clears cookie |
+| GET | `/api/me` | Returns current user `{ id, email, name }` or 401 |
+| PUT | `/api/users` | Update profile/password; requires active session |
 
 ### Recipes (Food)
 
@@ -219,7 +243,7 @@ Frontend runs on `http://localhost:5173`. Vite proxies `/api` to `http://localho
 ### 4. 401 Handling
 
 - Shared axios instance (`axiosInstance.js`) with response interceptor.
-- On 401/403 or JWT errors → clear storage and redirect to `/`.
+- On 401 → redirect to `/`.
 
 ### 5. Not Found
 
