@@ -5,9 +5,10 @@ import { Input } from "../components/ui/input";
 import { Navigation } from "../components/Navigation";
 import { Footer } from "../components/Footer";
 import profileService from "../services/user"
-import { useNavigate } from 'react-router'
+import authService from "../services/auth"
+import { useNavigate, useOutletContext } from 'react-router'
 export default function Profile() {
-  const user_data = JSON.parse(window.localStorage.getItem("UserInformation"))
+  const user_data = useOutletContext()
   const navigate = useNavigate()
   const [name, setName] = useState(user_data.name);
   const [isEditingName, setIsEditingName] = useState(false);
@@ -20,10 +21,7 @@ export default function Profile() {
   const handleSaveName = async () => {
     if (editNameValue.trim()) {
       setName(editNameValue.trim());
-      await profileService.update({name: editNameValue})
-      const old_inf = JSON.parse(window.localStorage.getItem("UserInformation"))
-      const new_inf = {...old_inf, name: editNameValue}
-      window.localStorage.setItem("UserInformation", JSON.stringify(new_inf))
+      await profileService.update({ name: editNameValue })
       setIsEditingName(false);
     }
   };
@@ -50,9 +48,12 @@ export default function Profile() {
     }
   };
 
-  const handleLogout = () => {
-      window.localStorage.clear()
-      navigate('/')
+  const handleLogout = async () => {
+    try {
+      await authService.logout()
+    } catch (e) {
+    }
+    navigate('/')
   }
 
   return (

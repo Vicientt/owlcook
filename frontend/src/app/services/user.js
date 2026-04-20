@@ -1,4 +1,4 @@
-import api, { setToken } from './axiosInstance';
+import api from './axiosInstance';
 
 const baseUrl = '/api/users';
 
@@ -12,4 +12,4 @@ const update = async (credentials) => {
   return response.data;
 };
 
-export default { register, setToken, update };
+export default { register, update };

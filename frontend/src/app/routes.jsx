@@ -1,4 +1,4 @@
-import { createBrowserRouter, redirect, Outlet } from "react-router";
+import { createBrowserRouter, redirect, Outlet, useLoaderData } from "react-router";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import Dashboard from "./pages/Dashboard";
@@ -8,8 +8,14 @@ import Explore from "./pages/Explore";
 import Favorites from "./pages/Favorites";
 import Profile from "./pages/Profile";
 import foodService from "./services/food";
+import authService from "./services/auth";
 import NotFound from "./pages/NotFound";
 import {recipes} from "./utils/recipes";
+
+function ProtectedLayout() {
+  const user = useLoaderData();
+  return <Outlet context={user} />;
+}
 
 export const router = createBrowserRouter([
   {
@@ -21,12 +27,14 @@ export const router = createBrowserRouter([
     Component: SignUp,
   },
   {
-    element: <Outlet />,
-    loader: () => {
-      if (!window.localStorage.getItem("UserInformation")) {
+    element: <ProtectedLayout />,
+    loader: async () => {
+      try {
+        const user = await authService.me();
+        return user;
+      } catch {
         throw redirect("/");
       }
-      return null;
     },
     children: [
       {

@@ -4,8 +4,6 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Footer } from "../components/Footer";
 import loginService from "../services/login";
-import foodService from "../services/food";
-import userService from "../services/user";
 
 import { useState } from 'react'
 export default function Login() {
@@ -25,10 +23,7 @@ export default function Login() {
         return
       }
 
-      const response = await loginService.login({ email, password })
-      window.localStorage.setItem("UserInformation", JSON.stringify(response))
-      foodService.setToken(response.token)
-      userService.setToken(response.token)
+      await loginService.login({ email, password })
       navigate("/dashboard")
     } catch (err) {
       const errorMsg = err.response?.data?.error || err.response?.data?.message || err.message || "Invalid email or password"

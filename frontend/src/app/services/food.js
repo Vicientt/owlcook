@@ -1,4 +1,4 @@
-import api, { setToken } from './axiosInstance';
+import api from './axiosInstance';
 
 const baseUrl = '/api/food';
 
@@ -27,4 +27,4 @@ const remove = async (id) => {
   return response.data;
 };
 
-export default { setToken, getAll, update, create, remove, getById };
+export default { getAll, update, create, remove, getById };
