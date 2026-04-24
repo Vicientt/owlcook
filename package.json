@@ -9,9 +9,13 @@
     "build": "npm run build --prefix frontend",
     "deploy": "npm run build --prefix frontend && rm -rf backend/dist && cp -r frontend/dist backend/dist",
     "start": "npm run start --prefix backend",
-    "test": "npm run test --prefix backend"
+    "test:backend": "npm run test --prefix backend",
+    "test:frontend": "npm run test --prefix frontend",
+    "test:e2e": "playwright test",
+    "test": "npm run test:backend && npm run test:frontend && npm run test:e2e"
   },
   "devDependencies": {
+    "@playwright/test": "^1.59.1",
     "concurrently": "^9.1.2"
   }
 }

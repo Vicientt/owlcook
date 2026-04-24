@@ -12,5 +12,10 @@ export default defineConfig({
         cookieDomainRewrite: 'localhost',
       }
     }
-  }
+  },
+  test: {
+    environment: 'jsdom',
+    setupFiles: ['./src/test/setup.js'],
+    globals: false,
+  },
 })
