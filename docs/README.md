@@ -9,11 +9,12 @@ OwlCook is a full-stack web application that helps college students discover and
 1. [Tech Stack](#tech-stack)
 2. [Project Structure](#project-structure)
 3. [Getting Started](#getting-started)
-4. [Architecture Overview](#architecture-overview)
-5. [Authentication](#authentication)
-6. [Routing](#routing)
-7. [API Reference](#api-reference)
-8. [Key Features](#key-features)
+4. [Testing](#testing)
+5. [Architecture Overview](#architecture-overview)
+6. [Authentication](#authentication)
+7. [Routing](#routing)
+8. [API Reference](#api-reference)
+9. [Key Features](#key-features)
 
 ---
 
@@ -37,24 +38,29 @@ owlcook/
 │   │   │   ├── components/       # Reusable UI (Navigation, Footer, Button, Input, Slider)
 │   │   │   ├── pages/            # Route components (Login, Dashboard, Explore, etc.)
 │   │   │   ├── services/         # API clients & axios instance
-│   │   │   ├── utils/            # recipes.js (static recipe data)
-│   │   │   ├── App.jsx
-│   │   │   └── routes.jsx
-│   │   ├── styles/
-│   │   │   ├── index.css
-│   │   │   └── theme.css
+│   │   │   └── utils/            # recipes.js (static recipe data)
+│   │   ├── test/
+│   │   │   ├── setup.js          # jest-dom matchers
+│   │   │   └── Login.test.jsx    # frontend unit tests
 │   │   └── main.jsx
-│   ├── index.html
-│   ├── vite.config.js
+│   ├── vite.config.js            # includes Vitest config
 │   └── package.json
 ├── backend/
 │   ├── controllers/              # Express route handlers (login, user, food, generator)
 │   ├── models/                   # Mongoose schemas (User, Food)
 │   ├── utils/                    # middleware, config, logger, prompt
+│   ├── tests/api.test.mjs        # backend API tests
+│   ├── vitest.config.mjs
 │   ├── app.js
 │   ├── index.js
 │   └── package.json
-└── README.md
+├── e2e/
+│   └── owlcook.spec.js           # Playwright E2E tests
+├── docs/
+│   ├── README.md                 # this file
+│   └── TESTING.md
+├── playwright.config.js
+└── .github/workflows/ci.yml
 ```
 
 ---
@@ -109,6 +115,31 @@ npm run dev      # Runs on http://localhost:5173
 ```
 
 Frontend runs on `http://localhost:5173`. Vite proxies `/api` to `http://localhost:3001`.
+
+---
+
+## Testing
+
+Full details in [`docs/TESTING.md`](./TESTING.md).
+
+### Run tests
+
+```bash
+npm test               # all 9 tests (backend + frontend + E2E)
+npm run test:backend   # 3 API tests — Vitest + Supertest
+npm run test:frontend  # 3 UI tests  — Vitest + React Testing Library
+npm run test:e2e       # 3 E2E tests — Playwright (Chromium)
+```
+
+### Test layers
+
+| Layer | Tool | What is tested |
+|-------|------|----------------|
+| Backend | Vitest + Supertest | `POST /api/users` — success, short input, duplicate email |
+| Frontend | Vitest + Testing Library | Login heading, empty-field error, input rendering |
+| E2E | Playwright | Page load, visible inputs, empty-form error in real browser |
+
+CI runs all three layers automatically on every push via `.github/workflows/ci.yml`.
 
 ---
 
