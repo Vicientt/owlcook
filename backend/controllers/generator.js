@@ -3,12 +3,19 @@ const prompt = require('../utils/prompt')
 require('dotenv').config()
 
 const OpenAI = require('openai')
-const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY})
+
+let openai = null
+const getOpenAI = () => {
+    if (!openai) {
+        openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+    }
+    return openai
+}
 
 generatorRouter.post('/', async (req, res) => {
     const {budget, portion, cookingTime, diet, cuisine} = req.body
     const request = prompt(budget, portion, cookingTime, diet, cuisine)
-    const completion = await openai.chat.completions.create({
+    const completion = await getOpenAI().chat.completions.create({
         model: "gpt-4",
         messages: [{role: "user", content: request}]
     });

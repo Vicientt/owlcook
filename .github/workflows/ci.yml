@@ -38,6 +38,7 @@ jobs:
           NODE_ENV: test
           TEST_MONGODB_URI: ${{ secrets.TEST_MONGODB_URI }}
           SECRET: ${{ secrets.SECRET }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
       - name: Run frontend tests
         run: npm run test:frontend
@@ -54,4 +55,5 @@ jobs:
           NODE_ENV: production
           MONGODB_URI: ${{ secrets.TEST_MONGODB_URI }}
           SECRET: ${{ secrets.SECRET }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           PORT: 4139
