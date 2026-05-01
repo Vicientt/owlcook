@@ -15,7 +15,7 @@ export default function Dashboard() {
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-teal-400/20 rounded-full -ml-24 -mb-24"></div>
           <div className="absolute top-1/2 left-1/3 w-32 h-32 bg-rose-400/15 rounded-full"></div>
           <div className="relative z-10 max-w-4xl">
-            <h1 className="text-6xl mb-6" style={{ fontWeight: 800 }}>Welcome to OwlCook! 👋</h1>
+            <h1 className="text-6xl mb-6" style={{ fontWeight: 800 }}>Welcome to OwlCook! 🦉</h1>
             <p className="text-2xl text-white/90 mb-8">
               Your AI-powered recipe companion for college students. Generate delicious meals that match your budget, 
               dietary preferences, and cooking time. Let's make cooking easy and fun!
