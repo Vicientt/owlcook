@@ -1,11 +1,11 @@
-import { describe, test, expect, beforeAll, afterAll, beforeEach } from 'vitest'
+import { describe, test, expect, beforeEach, afterAll } from 'vitest'
 import supertest from 'supertest'
-import mongoose from 'mongoose'
 import { createRequire } from 'module'
 
 const require = createRequire(import.meta.url)
 const app = require('../app')
 const User = require('../models/user')
+const pool = require('../db')
 
 const api = supertest(app)
 
@@ -15,17 +15,13 @@ const TEST_USER = {
   password: 'password123',
 }
 
-beforeAll(async () => {
-  await mongoose.connection.asPromise()
-})
-
 beforeEach(async () => {
-  await User.deleteMany({ email: TEST_USER.email })
+  await User.deleteByEmail(TEST_USER.email)
 })
 
 afterAll(async () => {
-  await User.deleteMany({ email: TEST_USER.email })
-  await mongoose.connection.close()
+  await User.deleteByEmail(TEST_USER.email)
+  await pool.end()
 })
 
 describe('POST /api/users - registration', () => {
@@ -39,6 +35,7 @@ describe('POST /api/users - registration', () => {
     expect(response.body.email).toBe(TEST_USER.email)
     expect(response.body.name).toBe(TEST_USER.name)
     expect(response.body.passwordHash).toBeUndefined()
+    expect(response.body.password_hash).toBeUndefined()
   })
 
   test('rejects registration when name or password is too short (400)', async () => {
