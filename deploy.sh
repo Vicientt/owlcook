@@ -17,6 +17,9 @@ npm install --prefix backend
 echo "Building frontend and copying to backend..."
 npm run deploy
 
+echo "Applying database schema..."
+mysql -h localhost -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" < docs/schema.sql
+
 echo "Restarting app with PM2..."
 pm2 restart owlcook
 
