@@ -1,28 +1,21 @@
-.PHONY: install build deploy run stop restart logs
+DB_USER = nguyen15
+DB_PASS = S224239
+DB_NAME = db_nguyen15
+MYSQL   = mysql -h localhost -u $(DB_USER) -p$(DB_PASS) $(DB_NAME)
 
-PORT ?= 4039
+.PHONY: db-show-users db-show-foods db-clear db-reset
 
-install:
-	cd backend && npm install
-	cd frontend && npm install
+db-show-users:
+	@$(MYSQL) -e "SELECT id, email, name, created_at FROM users;"
 
-build:
-	cd frontend && npm run build
+db-show-foods:
+	@$(MYSQL) -e "SELECT id, name, difficulty, user_id, created_at FROM foods;"
 
-deploy: build
-	rm -rf backend/dist
-	cp -r frontend/dist backend/dist
+db-clear:
+	@$(MYSQL) -e "DELETE FROM foods; DELETE FROM users;"
+	@echo "All data deleted"
 
-run: deploy
-	bash start.sh $(PORT)
-
-stop:
-	@pkill -f "node index.js" 2>/dev/null && echo "Server stopped" || echo "No server running"
-
-restart: stop
-	@sleep 1
-	nohup npm start > owlcook.log 2>&1 &
-	@sleep 3 && tail -3 owlcook.log
-
-logs:
-	tail -f owlcook.log
+db-reset:
+	@$(MYSQL) -e "DROP TABLE IF EXISTS foods; DROP TABLE IF EXISTS users;"
+	@$(MYSQL) < docs/schema.sql
+	@echo "Tables recreated"
