@@ -10,6 +10,22 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    services:
+      mariadb:
+        image: mariadb:10.11
+        env:
+          MYSQL_ROOT_PASSWORD: rootpass
+          MYSQL_DATABASE: owlcook
+          MYSQL_USER: owlcook_user
+          MYSQL_PASSWORD: owlcook_pass
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -u owlcook_user -powlcook_pass"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -32,11 +48,18 @@ jobs:
       - name: Install frontend dependencies
         run: npm install --prefix frontend
 
+      - name: Apply database schema
+        run: mysql -h 127.0.0.1 -u owlcook_user -powlcook_pass owlcook < docs/schema.sql
+
       - name: Run backend tests
         run: npm run test:backend
         env:
           NODE_ENV: test
-          TEST_MONGODB_URI: ${{ secrets.TEST_MONGODB_URI }}
+          DB_HOST: 127.0.0.1
+          DB_USER: owlcook_user
+          DB_PASSWORD: owlcook_pass
+          DB_NAME: owlcook
+          TEST_DB_NAME: owlcook
           SECRET: ${{ secrets.SECRET }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
@@ -53,7 +76,11 @@ jobs:
         run: npm run test:e2e
         env:
           NODE_ENV: production
-          MONGODB_URI: ${{ secrets.TEST_MONGODB_URI }}
+          DB_HOST: 127.0.0.1
+          DB_USER: owlcook_user
+          DB_PASSWORD: owlcook_pass
+          DB_NAME: owlcook
+          TEST_DB_NAME: owlcook
           SECRET: ${{ secrets.SECRET }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           PORT: 4139
