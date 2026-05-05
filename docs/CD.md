@@ -84,8 +84,11 @@ npm run deploy
 Create `backend/.env` with:
 
 ```
-MONGODB_URI=<your-mongodb-atlas-uri>
-TEST_MONGODB_URI=<your-test-db-uri>
+DB_HOST=localhost
+DB_USER=nguyen15
+DB_PASSWORD=S224239
+DB_NAME=db_nguyen15
+TEST_DB_NAME=db_nguyen15
 SECRET=<session-secret>
 OPENAI_API_KEY=<your-openai-key>
 PORT=4139
@@ -217,6 +220,6 @@ PM2 keeps the Node.js process alive, restarts it automatically if it crashes, an
 
 **What is still fragile or simple about this deployment setup?**  
 - The runner must be started manually (`./run.sh`); it is not registered as a system service.
-- Sessions are stored in memory, so PM2 restart logs all users out.
+- Sessions are stored in memory, so a PM2 restart logs all users out.
 - There is no rollback mechanism — if `deploy.sh` breaks, the old version is gone.
 - Secrets in `backend/.env` are managed manually on the server, not through a secrets manager.

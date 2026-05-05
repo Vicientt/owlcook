@@ -23,7 +23,7 @@ OwlCook is a full-stack web application that helps college students discover and
 | Layer | Technology |
 |-------|------------|
 | **Frontend** | React 19, React Router 7, Vite 6, Tailwind CSS 4, Axios, Lucide React (icons) |
-| **Backend** | Node.js, Express 5, MongoDB (Mongoose), express-session, bcrypt |
+| **Backend** | Node.js, Express 5, MariaDB/MySQL (mysql2), express-session, bcrypt |
 | **AI** | OpenAI GPT-4 (recipe generation) |
 
 ---
@@ -47,7 +47,7 @@ owlcook/
 │   └── package.json
 ├── backend/
 │   ├── controllers/              # Express route handlers (login, user, food, generator)
-│   ├── models/                   # Mongoose schemas (User, Food)
+│   ├── models/                   # SQL data-access modules (User, Food)
 │   ├── utils/                    # middleware, config, logger, prompt
 │   ├── tests/api.test.mjs        # backend API tests
 │   ├── vitest.config.mjs
@@ -70,21 +70,33 @@ owlcook/
 ### Prerequisites
 
 - Node.js 18+
-- MongoDB (local or Atlas)
+- MariaDB or MySQL (local)
 - OpenAI API key
+
+### Database Setup
+
+Apply the schema once to your MariaDB/MySQL instance:
+
+```bash
+mysql -u <user> -p <database> < docs/schema.sql
+```
 
 ### Environment Variables
 
 Create `backend/.env`:
 
 ```
-MONGODB_URI=mongodb+srv://...
+DB_HOST=localhost
+DB_USER=owlcook_user
+DB_PASSWORD=owlcook_pass
+DB_NAME=owlcook
+TEST_DB_NAME=owlcook_test
 SECRET=<session-secret>
 OPENAI_API_KEY=sk-...
-PORT=3001
+PORT=4139
 ```
 
-For tests: `TEST_MONGODB_URI` (when `NODE_ENV=test`).
+`TEST_DB_NAME` is used when `NODE_ENV=test`.
 
 ### Run the Application
 
@@ -176,7 +188,7 @@ CI runs all three layers automatically on every push via `.github/workflows/ci.y
 
 ### How It Works
 
-1. **Register** (`POST /api/users`) – Hashes password with bcrypt and saves user to MongoDB.
+1. **Register** (`POST /api/users`) – Hashes password with bcrypt and inserts user into MariaDB.
 2. **Login** (`POST /api/login`) – Validates email/password with bcrypt; on success sets `req.session.userId` and returns `{ id, email, name }`.
 3. **Session cookie** – Express writes a `connect.sid` cookie (`httpOnly`, `maxAge` 24 hours) to the browser automatically.
 4. **Subsequent requests** – Browser sends the cookie on every request; `userExtractor` middleware resolves the user from `req.session.userId`.
@@ -267,7 +279,7 @@ app.use(session({
 
 ### 3. Favorites
 
-- Saved recipes stored in MongoDB with user reference.
+- Saved recipes stored in MariaDB `foods` table with `user_id` foreign key.
 - Each recipe has: name, description, time, cost, servings, difficulty, ingredients, steps, nutritions.
 - Favorites page shows level and calories in colored boxes.
 
