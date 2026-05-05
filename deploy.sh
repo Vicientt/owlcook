@@ -18,6 +18,7 @@ echo "Building frontend and copying to backend..."
 npm run deploy
 
 echo "Applying database schema..."
+set -a && source backend/.env && set +a
 mysql -h localhost -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" < docs/schema.sql
 
 echo "Restarting app with PM2..."
