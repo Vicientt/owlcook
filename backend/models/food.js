@@ -47,8 +47,29 @@ const create = async ({ name, description, time, cost, servings, difficulty, ing
   return findById(result.insertId)
 }
 
+const update = async (id, { name, description, time, cost, servings, difficulty, ingredients, steps, nutritions }) => {
+  await pool.execute(
+    `UPDATE foods SET
+       name = ?, description = ?, time = ?, cost = ?, servings = ?, difficulty = ?,
+       ingredients = ?, steps = ?,
+       calories = ?, protein = ?, carbs = ?, fat = ?
+     WHERE id = ?`,
+    [
+      name, description, time, cost, servings, difficulty,
+      JSON.stringify(ingredients || []),
+      JSON.stringify(steps || []),
+      nutritions?.calories || null,
+      nutritions?.protein || null,
+      nutritions?.carbs   || null,
+      nutritions?.fat     || null,
+      id,
+    ]
+  )
+  return findById(id)
+}
+
 const deleteById = async (id) => {
   await pool.execute('DELETE FROM foods WHERE id = ?', [id])
 }
 
-module.exports = { findByUser, findById, create, deleteById }
+module.exports = { findByUser, findById, create, update, deleteById }
